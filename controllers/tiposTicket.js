@@ -1,60 +1,78 @@
+const TipoTicket = require("../models/tiposTicket");
 
 
-const Roles = require("../models/role");
-const { Op } = require("sequelize");
 
 const getAll = async (req, res) => {
-	if (req.usuario.rol === "TICS") {
-		const rol = await Roles.findAll({
-			where: {
-				rol: {
-					[Op.ne]: "ADMIN",
-				},
-			},
-		});
-		res.json({ ok: true, rol });
-	} else {
-		const rol = await Roles.findAll();
-
-	res.json({ ok: true, rol });
-	}
-	
+  const tipoTickets = await TipoTicket.findAll({});
+  res.status(200).json({ ok: true, tipoTickets });
 };
 
 const GetById = async (req, res) => {
-	res.json({ usuarios });
+  const { id } = req.params;
+  const tipoTicket = await TipoTicket.findByPk(id);
+
+  if (!tipoTicket) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+
+  res.status(200).json({ ok: true, tipoTicket });
 };
 
 const post = async (req, res) => {
-	const { rol } = req.body;
+  const { nombre } = req.body;
 
-	const roles = new Roles({ rol });
-	const role = await Roles.findOne({
-		where: {
-			rol: roles.rol,
-		},
-	});
+  const tipoTickets = new TipoTicket ({ nombre});
+  const tipoTicket = await TipoTicket.findOne({
+    where: {
+      nombre: tipoTickets.nombre,
+    },
+  });
 
-	console.log(role);
+  if (tipoTicket) {
+    return res.status(400).json({
+      msg: `El nombre ${nombre} ya se encuentra registrado`,
+    });
+  }
 
-	if (role) {
-		return res.status(400).json({
-			msg: "Este rol ya existe",
-		});
-	}
-
-	await roles.save();
-	res.status(201).json({ msg: "El rol a sido registrado con exito" });
+  await tipoTickets.save();
+  res.status(201).json({ msg: "El tipoTicket a sido registrado con exito.." });
 };
 
 const update = async (req, res) => {
-	res.send("update guardada con exito..");
+  const { id } = req.params;
+  const { nombre } = req.body;
+  const tipoTicket = await TipoTicket.findByPk(id);
+
+  if (!tipoTicket) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+  await TipoTicket.update(
+    {
+      nombre
+    },
+    { where: { id: id } }
+  );
+  res.status(200).json({ok: false, msg:"El tipoTicket a sido guardada con exito.."});
 };
 
 const deleteById = async (req, res) => {
-	res.status(200).json({
-		msg: "El usuario a sido desactivado con exito...",
-	});
+  const { id } = req.params;
+  const tipoTicket = await TipoTicket.findByPk(id);
+
+  if (!tipoTicket) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+  await tipoTicket.update({ estado: 0 });
+
+  res.status(200).json({
+    msg: "El tipoTicket a sido desactivado con exito...",
+  });
 };
 
-module.exports = { getAll, GetById, post, update,deleteById };
+module.exports = { getAll, GetById, post, update, deleteById };

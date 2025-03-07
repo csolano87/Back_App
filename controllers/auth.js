@@ -4,7 +4,7 @@ const Usuario = require("../models/usuarios");
 const bcryptjs = require("bcryptjs");
 const { generarJWT } = require("../helpers/generarJWT");
 const Role = require("../models/role");
-//const Menu = require("../models/menu");
+
 
 const login = async (req, res) => {
   const { usuario, password } = req.body;
@@ -19,11 +19,7 @@ const login = async (req, res) => {
     include:{
 			model:Role,
 			as:"role",
-      /* include:{
-				model:Menu,
-				as:"menu"
-
-			} */
+      
 		}
   });
 

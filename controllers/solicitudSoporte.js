@@ -1,60 +1,79 @@
+const SolicitudSoporte = require("../models/solicitudSoporte");
 
 
-const Roles = require("../models/role");
-const { Op } = require("sequelize");
 
 const getAll = async (req, res) => {
-	if (req.usuario.rol === "TICS") {
-		const rol = await Roles.findAll({
-			where: {
-				rol: {
-					[Op.ne]: "ADMIN",
-				},
-			},
-		});
-		res.json({ ok: true, rol });
-	} else {
-		const rol = await Roles.findAll();
-
-	res.json({ ok: true, rol });
-	}
-	
+  const solicitudSoportes = await SolicitudSoporte.findAll({});
+  res.status(200).json({ ok: true, solicitudSoportes });
 };
 
 const GetById = async (req, res) => {
-	res.json({ usuarios });
+  const { id } = req.params;
+  const solicitudSoporte = await SolicitudSoporte.findByPk(id);
+
+  if (!solicitudSoporte) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+
+  res.status(200).json({ ok: true, solicitudSoporte });
 };
 
 const post = async (req, res) => {
-	const { rol } = req.body;
+  const { descripcion, tiempoAtencion, tiempoEspera} = req.body;
 
-	const roles = new Roles({ rol });
-	const role = await Roles.findOne({
-		where: {
-			rol: roles.rol,
-		},
-	});
+  const solicitudSoportes = new solicitudSoporte({ 
+	descripcion, tiempoAtencion, tiempoEspera });
+ /*  const solicitudSoporte = await SolicitudSoporte.findOne({
+    where: {
+      correo: solicitudSoportes.correo,
+    },
+  });
 
-	console.log(role);
+  if (solicitudSoporte) {
+    return res.status(400).json({
+      msg: `El correo ${correo} ya se encuentra registrado`,
+    });
+  } */
 
-	if (role) {
-		return res.status(400).json({
-			msg: "Este rol ya existe",
-		});
-	}
-
-	await roles.save();
-	res.status(201).json({ msg: "El rol a sido registrado con exito" });
+  await solicitudSoportes.save();
+  res.status(201).json({ msg: "El solicitudSoporte a sido registrado con exito.." });
 };
 
 const update = async (req, res) => {
-	res.send("update guardada con exito..");
+  const { id } = req.params;
+  const { descripcion, tiempoAtencion, tiempoEspera} = req.body;
+  const solicitudSoporte = await SolicitudSoporte.findByPk(id);
+
+  if (!solicitudSoporte) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+  await SolicitudSoporte.update(
+    {
+		descripcion, tiempoAtencion, tiempoEspera
+    },
+    { where: { id: id } }
+  );
+  res.status(200).json("El solicitudSoporte a sido guardada con exito..");
 };
 
 const deleteById = async (req, res) => {
-	res.status(200).json({
-		msg: "El usuario a sido desactivado con exito...",
-	});
+  const { id } = req.params;
+  const solicitudSoporte = await SolicitudSoporte.findByPk(id);
+
+  if (!solicitudSoporte) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+  await SolicitudSoporte.update({ estado: 0 });
+
+  res.status(200).json({
+    msg: "El solicitudSoporte a sido desactivado con exito...",
+  });
 };
 
-module.exports = { getAll, GetById, post, update,deleteById };
+module.exports = { getAll, GetById, post, update, deleteById };
