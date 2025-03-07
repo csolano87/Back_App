@@ -10,6 +10,7 @@ const login = async (req, res) => {
   const { usuario, password } = req.body;
   const user = new Usuario({ usuario, password });
 
+
   //verificar si el correo existe
   const existeuser = await Usuario.findOne({
     where: {
@@ -18,11 +19,11 @@ const login = async (req, res) => {
     include:{
 			model:Role,
 			as:"role",
-      include:{
+      /* include:{
 				model:Menu,
 				as:"menu"
 
-			}
+			} */
 		}
   });
 

@@ -1,60 +1,79 @@
-
-
-const Roles = require("../models/role");
-const { Op } = require("sequelize");
+const Cliente = require("../models/cliente");
 
 const getAll = async (req, res) => {
-	if (req.usuario.rol === "TICS") {
-		const rol = await Roles.findAll({
-			where: {
-				rol: {
-					[Op.ne]: "ADMIN",
-				},
-			},
-		});
-		res.json({ ok: true, rol });
-	} else {
-		const rol = await Roles.findAll();
-
-	res.json({ ok: true, rol });
-	}
-	
+  const clientes = await Cliente.findAll({});
+  res.status(200).json({ ok: true, clientes });
 };
 
 const GetById = async (req, res) => {
-	res.json({ usuarios });
+  const { id } = req.params;
+  const cliente = await Cliente.findByPk(id);
+
+  if (!cliente) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+
+  res.status(200).json({ ok: true, cliente });
 };
 
 const post = async (req, res) => {
-	const { rol } = req.body;
+  const { nombres, apellidos, correo, telefono } = req.body;
 
-	const roles = new Roles({ rol });
-	const role = await Roles.findOne({
-		where: {
-			rol: roles.rol,
-		},
-	});
+  const clientes = new Cliente({ nombres, apellidos, correo, telefono });
+  const cliente = await Cliente.findOne({
+    where: {
+      correo: clientes.correo,
+    },
+  });
 
-	console.log(role);
+  if (cliente) {
+    return res.status(400).json({
+      msg: `El correo ${correo} ya se encuentra registrado`,
+    });
+  }
 
-	if (role) {
-		return res.status(400).json({
-			msg: "Este rol ya existe",
-		});
-	}
-
-	await roles.save();
-	res.status(201).json({ msg: "El rol a sido registrado con exito" });
+  await clientes.save();
+  res.status(201).json({ msg: "El cliente a sido registrado con exito.." });
 };
 
 const update = async (req, res) => {
-	res.send("update guardada con exito..");
+  const { id } = req.params;
+  const { nombres, apellidos, correo, telefono } = req.body;
+  const cliente = await Cliente.findByPk(id);
+
+  if (!cliente) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+  await Cliente.update(
+    {
+      nombres,
+      apellidos,
+      correo,
+      telefono,
+    },
+    { where: { id: id } }
+  );
+  res.status(200).json("El cliente a sido guardada con exito..");
 };
 
 const deleteById = async (req, res) => {
-	res.status(200).json({
-		msg: "El usuario a sido desactivado con exito...",
-	});
+  const { id } = req.params;
+  const cliente = await Cliente.findByPk(id);
+
+  if (!cliente) {
+    res
+      .status(400)
+      .json({ ok: false, msg: `El Id ${id} no esta registrado en el sistema` });
+  }
+  await cliente.update({ estado: 0 });
+
+  res.status(200).json({
+    msg: "El cliente a sido desactivado con exito...",
+  });
 };
 
-module.exports = { getAll, GetById, post, update,deleteById };
+module.exports = { getAll, GetById, post, update, deleteById };
