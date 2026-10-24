@@ -1,23 +1,24 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
-const db = require("../db/connection");
+const {  DataTypes, Model } = require("sequelize");
+const sequelize = require("../db/connection");
 //const Cabecera = require('./cabecera');
 
-const Role = db.define(
-  "Role",
+class Rol extends Model {}
+Rol.init(
   {
-    rol: {
+    nombre: {
       type: DataTypes.STRING,
-      required: [true, "El rol es obligatorio"],
+      required: [true, "El nombre es obligatorio"],
     },
-    USUARIO_ID: DataTypes.INTEGER,
-    CREATEDBY:DataTypes.INTEGER,
-    UPDATEDBY:DataTypes.INTEGER,
-    DELETEDBY:DataTypes.INTEGER,
+    estado: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: 1,
+    },
   },
   {
-    freezeTableName: true,
+   sequelize,
     tableName: "roles",
-    timestamps: false,
+    timestamps: true,
+    paranoid: false,
   },
 );
-module.exports = Role;
+module.exports = Rol;

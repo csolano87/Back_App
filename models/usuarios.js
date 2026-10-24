@@ -1,34 +1,32 @@
-const { DataTypes, Model, Sequelize } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/connection");
 
 class Usuario extends Model {}
 Usuario.init(
-	{
-		doctor: DataTypes.STRING,
+  {
+    apellidos: DataTypes.STRING,
 
-		codigo_doctor: DataTypes.STRING,
+    nombres: DataTypes.STRING,
 
-		usuario: DataTypes.STRING,
+    usuario: DataTypes.STRING,
 
-		password: DataTypes.STRING,
+    password: DataTypes.STRING,
 
-		rol: DataTypes.STRING,
-		USUARIO_ID: DataTypes.INTEGER,
-		CREATEDBY: DataTypes.INTEGER,
-		UPDATEDBY: DataTypes.INTEGER,
-		DELETEDBY: DataTypes.INTEGER,
+   // rol: DataTypes.INTEGER,
+ 
 
-		estado: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: 1,
-		},
-	},
+    estado: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: 1,
+    },
+  },
 
-	{
-		sequelize,
-		modelName: "usuarios",
-		timestamps: false,
-	}
+  {
+    sequelize,
+    modelName: "usuarios",
+    timestamps: true,
+    paranoid: false,
+  },
 );
 
 module.exports = Usuario;

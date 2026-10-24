@@ -5,151 +5,160 @@ const bcryptjs = require("bcryptjs");
 const Usuario = require("../models/usuarios");
 const { Op, Model } = require("sequelize");
 const Role = require("../models/role");
-//const MenuRole = require("../models/menuRoles");
-//const Menu = require("../models/menu");
-//const { substring } = require('sequelize/types/lib/operators');
+const Rol = require("../models/role");
+const Menu = require("../models/menus");
+const Permiso = require("../models/permisos");
 
 const usuariosGet = async (req, res) => {
-	/* const desde = Number(req.query.desde) || 0;
-    const usuarios = await Usuario.findAll({ offset: desde, limit: 5 }) */
+  const usuarios = await Usuario.findAll({
+    attributes: {
+      exclude: ["password"],
+    },
+    include: {
+      model: Rol,
+      as: "rol",
 
-	//const total = await Usuario.count();
-	/*  const activados = await Usuario.count({
-        where: {
-            estado: 'true'
+      include: [
+        {
+          model: Permiso,
+          as: "permiso",
+          through: {
+            attributes: [],
+          },
+          include: {
+            model: Menu,
+            as: "menu",
+          },
         },
-
-    }) */
-
-	const usuarios = await Usuario.findAll({
-		include:{
-			model:Role,
-			as:"role"
-		}
-	});
-	res.json({ ok: true, usuarios: usuarios });
+      ],
+    },
+  });
+  res.json({ ok: true, usuarios: usuarios });
 };
 
 const usuariosGetID = async (req, res) => {
-	const { id } = req.params;
-	const existeUser = await Usuario.findByPk(id,{
-		include:{
-			model:Role,
-			as:"role",
-			include:{
-				model:Menu,
-				as:"menu"
+  const { id } = req.params;
+  const existeUser = await Usuario.findByPk(id, {
+    attributes: {
+      exclude: ["password"],
+    },
+    include: {
+      model: Rol,
+      as: "rol",
 
-			}
-		}
-	});
+      include: [
+        {
+          model: Permiso,
+          as: "permiso",
+          through: {
+            attributes: [],
+          },
+          include: {
+            model: Menu,
+            as: "menu",
+          },
+        },
+      ],
+    },
+  });
 
-	res.status(200).json({ ok: true, user: existeUser });
+  res.status(200).json({ ok: true, user: existeUser });
 };
 
 const usuariosGetfiltro = async (req, res) => {
-	const { busquedausuario } = req.params;
+  const { busquedausuario } = req.params;
 
-	const dataCA = busquedausuario.replace(/\w\S*/g, function (e) {
-		return e.charAt(0).toUpperCase() + e.substring(1);
-	});
+  const dataCA = busquedausuario.replace(/\w\S*/g, function (e) {
+    return e.charAt(0).toUpperCase() + e.substring(1);
+  });
 
-	const data = await Usuario.findAll({
-		where: {
-			doctor: {
-				[Op.like]: `%${dataCA}%`,
-			},
-		},
-		include:{
-			model:Role,
-			as:"role"
-		}
-	});
+  const data = await Usuario.findAll({
+    where: {
+      doctor: {
+        [Op.like]: `%${dataCA}%`,
+      },
+    },
+    include: {
+      model: Rol,
+      as: "rol",
+    },
+  });
 
-	res.status(200).json({ ok: true, resultados: data });
+  res.status(200).json({ ok: true, resultados: data });
 };
 
 const usuariosPost = async (req, res) => {
-	try {
-		const { doctor, codigo_doctor, usuario, password, rol } = req.body;
+  try {
+    const { apellidos, nombres, usuario, password, rolId } = req.body;
 
-		const user = new Usuario({
-			doctor,
-			codigo_doctor,
-			usuario,
-			password,
-			rol,
-			roleId:rol
-		});
+    const user = new Usuario({
+    apellidos, nombres, usuario, password, rolId
+    });
 
-		const existeUser = await Usuario.findOne({
-			where: { usuario: user.usuario },
-		});
+    const existeUser = await Usuario.findOne({
+      where: { usuario: user.usuario },
+    });
 
-		if (existeUser) {
-			return res.status(400).json({ msg: "Este usuario ya existe" });
-		}
+    if (existeUser) {
+      return res.status(400).json({ msg: "Este usuario ya existe" });
+    }
 
-		const salt = bcryptjs.genSaltSync();
-		user.password = bcryptjs.hashSync(password, salt);
+    const salt = bcryptjs.genSaltSync();
+    user.password = bcryptjs.hashSync(password, salt);
 
-		await user.save();
-		res.status(201).json({
-			msg: "El usuario a sido registrado con exito",
-		});
-	} catch (error) {
-		console.log(error);
-	}
+    await user.save();
+    res.status(201).json({
+      msg: "El usuario a sido registrado con exito",
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const usuariosUpdate = async (req, res) => {
-	const id = req.body.id;
+  const id = req.params.id;
+//console.log('------------update',id)
+  const existeUser = await Usuario.findByPk(id);
+  if (!existeUser) {
+    return res.status(404).json({ ok: true, msg: "no existe usuario" });
+  }
 
-	const existeUser = await Usuario.findByPk(id);
-	if (!existeUser) {
-		return res.status(404).json({ ok: true, msg: "no existe usuario" });
-	}
+  const { apellidos, nombres, usuario, password, rolId  } = req.body;
 
-	const { doctor, usuario, rol } = req.body;
+  const usuarioUpdate = await Usuario.update(
+    {
+      apellidos, nombres, usuario, password, rolId 
+    },
+    { where: { id: id } },
+  );
 
-	const usuarioUpdate=await Usuario.update(
-		{
-			doctor,
-			usuario,
-			rol,
-			roleId:rol
-		},
-		{ where: { id: id } }
-
-
-		
-	);
-
-	res.status(200).json({ ok: true, msg: `Se actualizo con exito los datos del usuario` });
+  res
+    .status(200)
+    .json({ ok: true, msg: `Se actualizo con exito los datos del usuario` });
 };
 
 const usuariosDelete = async (req, res) => {
-	const { id } = req.params;
+  const { id } = req.params;
 
-	const user = await Usuario.findByPk(id);
+  const user = await Usuario.findByPk(id);
 
-	if (!user) {
-		return res.status(404).json({
-			msg: `No existe un usuario con el id ${id}`,
-		});
-	}
-	// await usuario.destroy();
-	await user.update({ estado: false });
-	res.status(200).json({
-		msg: "El usuario a sido desactivado con exito...",
-	});
+  if (!user) {
+    return res.status(404).json({
+      msg: `No existe un usuario con el id ${id}`,
+    });
+  }
+  // await usuario.destroy();
+  await user.update({ estado: false });
+  res.status(200).json({
+    msg: "El usuario a sido desactivado con exito...",
+  });
 };
 
 module.exports = {
-	usuariosGet,
-	usuariosGetID,
-	usuariosPost,
-	usuariosUpdate,
-	usuariosDelete,
-	usuariosGetfiltro,
+  usuariosGet,
+  usuariosGetID,
+  usuariosPost,
+  usuariosUpdate,
+  usuariosDelete,
+  usuariosGetfiltro,
 };

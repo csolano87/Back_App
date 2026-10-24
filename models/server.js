@@ -12,7 +12,6 @@ const path = require("path");
 const { truncate } = require("fs");
 const { findLastIndex } = require("lodash");
 
-
 require("../db/asociations");
 
 //const store=new session.MemoryStore;
@@ -27,11 +26,10 @@ class Server {
     this.app = express();
     this.port = process.env.PORT;
     this.paths = {
-
       auth: "/api/auth",
       CategoriaTecnico: "/api/CategoriaTecnico",
       clientes: "/api/clientes",
-      equipos: "/api/equipos",      
+      equipos: "/api/equipos",
       roles: "/api/roles",
       SolicitudSoporte: "/api/SolicitudSoporte",
       tecnicos: "/api/tecnicos",
@@ -61,7 +59,7 @@ class Server {
         origin: true,
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
-      })
+      }),
     );
     this.app.use(cookieParser());
 
@@ -102,19 +100,22 @@ class Server {
     });
   }
   routes() {
-
     this.app.use(this.paths.auth, require("../routes/auth"));
-    this.app.use(this.paths.CategoriaTecnico, require("../routes/categoriaTecnico"));
+    this.app.use(
+      this.paths.CategoriaTecnico,
+      require("../routes/categoriaTecnico"),
+    );
     this.app.use(this.paths.clientes, require("../routes/cliente"));
     this.app.use(this.paths.equipos, require("../routes/equipos"));
     this.app.use(this.paths.roles, require("../routes/roles"));
-    this.app.use(this.paths.SolicitudSoporte, require("../routes/solicitudSoporte"));
+    this.app.use(
+      this.paths.SolicitudSoporte,
+      require("../routes/solicitudSoporte"),
+    );
     this.app.use(this.paths.tecnicos, require("../routes/tecnicos"));
     this.app.use(this.paths.TipoSoporte, require("../routes/tipoSoporte"));
     this.app.use(this.paths.TipoTicket, require("../routes/tiposTicket"));
     this.app.use(this.paths.usuarios, require("../routes/usuarios"));
-
-
   }
 
   listen() {

@@ -1,67 +1,34 @@
 const Usuario = require("../models/usuarios");
-const Role = require("../models/role");
-const Cliente = require("../models/cliente");
-const Equipo = require("../models/equipos");
-const CategoriaTecnico = require("../models/categoriaTecnico");
-const Tecnico = require("../models/tecnicos");
-const SolicitudSoporte = require("../models/solicitudSoporte");
-const TipoTicket = require("../models/tiposTicket");
-const TipoSoporte = require("../models/tipoSoporte");
-const Sintoma = require("../models/sintoma");
-const AsignacionSoporte = require("../models/asignacionSoporte");
-/* const Menu = require("../models/menu");
-const MenuRole = require("../models/menuRoles"); */
 
-Usuario.belongsTo(Role, { as: "role", foreignKey: "roleId" });
-Role.belongsTo(Usuario, { as: "usuario" });
-Cliente.hasMany(Equipo, { as: "equipo", foreignKey: "equipoId" });
-Equipo.belongsTo(Cliente, { as: "cliente" });
+const Rol = require("../models/role");
+const Permiso = require("../models/permisos");
+const Menu = require("../models/menus");
 
-/* SolicitudSoporte.hasMany(Tecnico, { as: "tecnico", foreignKey: "tecnicoId" });
-Tecnico.belongsTo(SolicitudSoporte, { as: "solicitud" }); */
+Usuario.belongsTo(Rol, { as: "rol", foreignKey: "rolId" });
+Rol.hasMany(Usuario, { as: "usuarios", foreignKey: "rolId" });
 
-SolicitudSoporte.belongsTo(TipoTicket, {
-  as: "tipoticket",
-  foreignKey: "tipoticketId",
+Rol.belongsToMany(Permiso, {
+  as: "permiso",
+  through: "rol_permisos",
+  foreignKey: "rolId",
+  otherKey: "permisoId",
 });
-TipoTicket.belongsTo(SolicitudSoporte, { as: "solicitud" });
 
-SolicitudSoporte.belongsTo(Sintoma, { as: "sintoma", foreignKey: "sintomaId" });
-Sintoma.belongsTo(SolicitudSoporte, { as: "solicitud" });
-
-SolicitudSoporte.belongsTo(Tecnico, { as: "tecnico", foreignKey: "tecnicoId" });
-Tecnico.belongsTo(SolicitudSoporte, { as: "solicitud" });
-
-SolicitudSoporte.belongsTo(Cliente, { as: "cliente", foreignKey: "clienteId" });
-Cliente.belongsTo(SolicitudSoporte, { as: "solicitud" });
-
-SolicitudSoporte.belongsTo(Equipo, { as: "equipo", foreignKey: "equipoId" });
-Equipo.belongsTo(SolicitudSoporte, { as: "solicitud" });
-
-SolicitudSoporte.belongsTo(AsignacionSoporte, {
-  as: "asignacion",
-  foreignKey: "asignacionId",
+Permiso.belongsToMany(Rol, {
+  as: "rol",
+  through: "rol_permisos",
+  foreignKey: "permisoId",
+  otherKey: "rolId",
 });
-AsignacionSoporte.belongsTo(SolicitudSoporte, { as: "solicitud" });
 
-Usuario.hasMany(SolicitudSoporte, {
-  as: "solicitud",
-  foreignKey: "solicitudId",
+Permiso.belongsTo(Menu, { as: "menu", foreignKey: "menuId" });
+Menu.hasMany(Permiso, { as: "permiso", foreignKey: "menuId" });
+Menu.hasMany(Menu, {
+  as: "submenus",
+  foreignKey: "menuPadreId",
 });
-SolicitudSoporte.belongsTo(Usuario, { as: "usuario" });
 
-SolicitudSoporte.belongsToMany(TipoSoporte, {
-  through: "SolicitudTipoAtencion",
+Menu.belongsTo(Menu, {
+  as: "padre",
+  foreignKey: "menuPadreId",
 });
-TipoSoporte.belongsToMany(SolicitudSoporte, {
-  through: "SolicitudTipoAtencion",
-});
-/* CategoriaTecnico.hasMany(Tecnico,{as:'tecnico', foreignKey:'tecnicoId'})
-Tecnico.belongsTo(CategoriaTecnico,{as:'categoria'}) */
-
-/* SolicitudSoporte.hasMany(TipoTicket,{as:'tipoticket', foreignKey:'tipoticketId'})
-TipoTicket.belongsTo(CategoriaTecnico,{as:'categoria'}) */
-
-/* 
-Role.belongsToMany(Menu ,{as:"menu", through: MenuRole});
-Menu.belongsToMany(Role ,{as:"role", through: MenuRole}) */

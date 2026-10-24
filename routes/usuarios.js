@@ -23,33 +23,37 @@ router.get("/:id", [validarJWT, esAdminRole], usuariosGetID);
 router.get(
   "/busquedausuario/:busquedausuario",
   [validarJWT, esAdminRole],
-  usuariosGetfiltro
+  usuariosGetfiltro,
 );
 router.put(
   "/:id",
   [
     validarJWT,
     esAdminRole,
+     check('apellidos','El apellido es obligatorio').not().isEmpty(),
+    check('nombres','El nombre es obligatorio').not().isEmpty(),
     check("usuario", "El usuario es obligatorio").not().isEmpty(),
-    check("doctor", "El doctor es obligatorio").not().isEmpty(),
-    check("rol").custom(rolValido),
+    check("password", "El password es obligatorio/ min 8 letras").isLength({
+      min: 8,
+    }),
+    check("rolId").custom(rolValido),
   ],
-  usuariosUpdate
+  usuariosUpdate,
 );
 
 router.post(
   "/",
   [
-    //check('doctor','El doctor es obligatorio').not().isEmpty(),
-    //check('apellido','El apellido es obligatorio').not().isEmpty(),
+    check('apellidos','El apellido es obligatorio').not().isEmpty(),
+    check('nombres','El nombre es obligatorio').not().isEmpty(),
     check("usuario", "El usuario es obligatorio").not().isEmpty(),
     check("password", "El password es obligatorio/ min 8 letras").isLength({
       min: 8,
     }),
-    check("rol").custom(rolValido),
+    check("rolId").custom(rolValido),
     validarCampos,
   ],
-  usuariosPost
+  usuariosPost,
 );
 
 router.delete("/:id", [validarJWT, esAdminRole], usuariosDelete);
