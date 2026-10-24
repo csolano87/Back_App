@@ -1,4 +1,4 @@
-const Equipo = require("../models/equipos");
+
 
 const getAll = async (req, res) => {
   const equipos = await Equipo.findAll({});

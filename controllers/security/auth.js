@@ -1,11 +1,11 @@
 const { Request, Response } = require("express");
-const Usuario = require("../models/usuarios");
+const Usuario = require("../../models/security/usuarios");
 
 const bcryptjs = require("bcryptjs");
-const { generarJWT } = require("../helpers/generarJWT");
-const Rol = require("../models/role");
-const Permiso = require("../models/permisos");
-const Menu = require("../models/menus");
+const { generarJWT } = require("../../helpers/generarJWT");
+const Rol = require("../../models/security/role");
+const Permiso = require("../../models/security/permisos");
+const Menu = require("../../models/security/menus");
 //const Menu = require("../models/menu");
 
 const login = async (req, res) => {

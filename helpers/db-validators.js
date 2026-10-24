@@ -1,5 +1,5 @@
 //const Cabecera = require("../models/cabecera");
-const Role = require("../models/role");
+const Role = require("../models/security/role");
 
 const rolValido = async (rol = "") => {
   //console.log(rol);

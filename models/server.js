@@ -27,15 +27,18 @@ class Server {
     this.port = process.env.PORT;
     this.paths = {
       auth: "/api/auth",
-      CategoriaTecnico: "/api/CategoriaTecnico",
-      clientes: "/api/clientes",
-      equipos: "/api/equipos",
+      usuarios: "/api/usuarios",
       roles: "/api/roles",
+      menus: "/api/menus",
+      permisos: "/api/permisos",
+
       SolicitudSoporte: "/api/SolicitudSoporte",
       tecnicos: "/api/tecnicos",
       TipoSoporte: "/api/tipoSoporte",
       TipoTicket: "/api/TipoTicket",
-      usuarios: "/api/usuarios",
+      CategoriaTecnico: "/api/CategoriaTecnico",
+      clientes: "/api/clientes",
+      equipos: "/api/equipos",
     };
     // Conectar a base de datos
     this.dbConnection();
@@ -82,7 +85,7 @@ class Server {
   async dbConnection() {
     try {
       await db.authenticate();
-      db.sync({ force: false }).then(() => {
+      db.sync({ alter: true }).then(() => {
         console.log("Database online");
       });
     } catch (error) {
@@ -100,14 +103,20 @@ class Server {
     });
   }
   routes() {
-    this.app.use(this.paths.auth, require("../routes/auth"));
+    this.app.use(this.paths.auth, require("../routes/security/auth"));
+    this.app.use(this.paths.usuarios, require("../routes/security/usuarios"));
+    this.app.use(this.paths.roles, require("../routes/security/roles"));
+
+    this.app.use(this.paths.menus, require("../routes/security/menus"));
+    this.app.use(this.paths.permisos, require("../routes/security/permisos"));
+
     this.app.use(
       this.paths.CategoriaTecnico,
       require("../routes/categoriaTecnico"),
     );
     this.app.use(this.paths.clientes, require("../routes/cliente"));
-    this.app.use(this.paths.equipos, require("../routes/equipos"));
-    this.app.use(this.paths.roles, require("../routes/roles"));
+    this.app.use(this.paths.equipos, require("../routes/inventory/equipos"));
+
     this.app.use(
       this.paths.SolicitudSoporte,
       require("../routes/solicitudSoporte"),
@@ -115,7 +124,6 @@ class Server {
     this.app.use(this.paths.tecnicos, require("../routes/tecnicos"));
     this.app.use(this.paths.TipoSoporte, require("../routes/tipoSoporte"));
     this.app.use(this.paths.TipoTicket, require("../routes/tiposTicket"));
-    this.app.use(this.paths.usuarios, require("../routes/usuarios"));
   }
 
   listen() {

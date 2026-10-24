@@ -1,14 +1,14 @@
 const { Router } = require("express");
 
-const { validarJWT } = require("../middleware/validar-jwt");
-const { esAdminRole } = require("../middleware/validar-roles");
+const { validarJWT } = require("../../middleware/validar-jwt");
+const { esAdminRole } = require("../../middleware/validar-roles");
 const {
     getAll,
     GetById,
     post,
     update,
     deleteById,
-  } = require("../controllers/equipos");
+  } = require("../../controllers/inventory/equipos");
   
   const router = Router();
   

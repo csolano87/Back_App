@@ -1,7 +1,7 @@
 const { repsonse, response } = require("express");
 
 
-const Rol = require("../models/role");
+const Rol = require("../models/security/role");
 const esAdminRole = (req, res = repsonse, next) => {
   if (!req.usuario) {
     // console.log(req.usuario)

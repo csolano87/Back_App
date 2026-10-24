@@ -3,10 +3,11 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 //validator = require('validator');
 
-const { login, renewToken } = require("../controllers/auth");
-const { validarCampos } = require("../middleware/validar-campos");
-const { validarJWT } = require("../middleware/validar-jwt");
-const { tieneRole } = require("../middleware/validar-roles");
+const { login, renewToken } = require("../../controllers/security/auth");
+//const { login, renewToken } = require("../../middleware/");
+const { validarCampos } = require("../../middleware/validar-campos");
+const { validarJWT } = require("../../middleware/validar-jwt");
+const { tieneRole } = require("../../middleware/validar-roles");
 
 const router = Router();
 
