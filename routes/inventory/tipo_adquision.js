@@ -9,24 +9,32 @@ createAreaEquipo,
 const { check } = require("express-validator");
 const { rolValido } = require("../../helpers/db-validators");
 const { validarJWT } = require("../../middleware/validar-jwt");
-const { esAdminRole } = require("../../middleware/validar-roles");
+const { esAdminRole, tieneRole } = require("../../middleware/validar-roles");
+const { validarCampos } = require("../../middleware/validar-campos");
 
 const router = Router();
 
-router.get("/", [validarJWT, esAdminRole], getAreaEquipo);
-router.get("/:id", [validarJWT, esAdminRole], getIdAreaEquipo);
+router.get("/", [validarJWT, tieneRole], getAreaEquipo);
+router.get("/:id", [validarJWT, tieneRole], getIdAreaEquipo);
 router.post(
   "/",
-  [validarJWT, createTipoAdquision, check("nombre", "El nombre es obligatorio").not().isEmpty(), check("rolId").custom(rolValido)],
+  [validarJWT, tieneRole,
+     check("nombre", "El nombre es obligatorio").not().isEmpty(), 
+   //  check("rolId").custom(rolValido)
+    validarCampos],
   createAreaEquipo,
 );
 
 router.put(
   "/:id",
-  [validarJWT, esAdminRole, check("nombre", "El nombre es obligatorio").not().isEmpty(), check("rolId").custom(rolValido)],
+  [validarJWT, tieneRole,
+     check("nombre", "El nombre es obligatorio").not().isEmpty(),
+    //  check("rolId").custom(rolValido)
+  validarCampos
+    ],
   updateAreaEquipo,
 );
 
-router.delete("/:id", [validarJWT, esAdminRole], deleteAreaEquipo);
+router.delete("/:id", [validarJWT, tieneRole], deleteAreaEquipo);
 
 module.exports = router;

@@ -26,19 +26,31 @@ class Server {
     this.app = express();
     this.port = process.env.PORT;
     this.paths = {
+      /* Security */
       auth: "/api/auth",
       usuarios: "/api/usuarios",
       roles: "/api/roles",
       menus: "/api/menus",
       permisos: "/api/permisos",
 
-      SolicitudSoporte: "/api/SolicitudSoporte",
+      /* Inventory */
+      areas: "/api/areas_equipos",
+      empresas: "/api/empresas",
+      movimientoEquipos: "/api/movimiento_equipo",
+      contrato: "/api/contrato_equipo",
+      equipos: "/api/equipos",
+      estadoEquipos: "/api/estado_equipos",
+      marcas: "/api/marcas_equipos",
+      tipoAquisicion: "/api/tipo_aquisicion",
+      tipomovimientos: "/api/tipo_movimiento",
+/* support */
+      /* SolicitudSoporte: "/api/SolicitudSoporte",
       tecnicos: "/api/tecnicos",
       TipoSoporte: "/api/tipoSoporte",
       TipoTicket: "/api/TipoTicket",
       CategoriaTecnico: "/api/CategoriaTecnico",
       clientes: "/api/clientes",
-      equipos: "/api/equipos",
+      equipos: "/api/equipos",  */
     };
     // Conectar a base de datos
     this.dbConnection();
@@ -85,7 +97,7 @@ class Server {
   async dbConnection() {
     try {
       await db.authenticate();
-      db.sync({ alter: true }).then(() => {
+      db.sync({ alter: false }).then(() => {
         console.log("Database online");
       });
     } catch (error) {
@@ -103,27 +115,31 @@ class Server {
     });
   }
   routes() {
+    /* Security  */
     this.app.use(this.paths.auth, require("../routes/security/auth"));
     this.app.use(this.paths.usuarios, require("../routes/security/usuarios"));
     this.app.use(this.paths.roles, require("../routes/security/roles"));
-
     this.app.use(this.paths.menus, require("../routes/security/menus"));
     this.app.use(this.paths.permisos, require("../routes/security/permisos"));
 
-    this.app.use(
-      this.paths.CategoriaTecnico,
-      require("../routes/categoriaTecnico"),
-    );
-    this.app.use(this.paths.clientes, require("../routes/cliente"));
+    /* Inventory */
+    this.app.use(this.paths.areas, require("../routes/inventory/areas_equipos"));
+    this.app.use(this.paths.empresas, require("../routes/inventory/empresas"));
+    this.app.use(this.paths.movimientoEquipos, require("../routes/inventory/equipo_movimiento"));
+    this.app.use(this.paths.contrato, require("../routes/inventory/equipos_contratos"));
     this.app.use(this.paths.equipos, require("../routes/inventory/equipos"));
+    this.app.use(this.paths.estadoEquipos, require("../routes/inventory/estado_equipo"));
+    this.app.use(this.paths.marcas, require("../routes/inventory/marcas"));
+    this.app.use(this.paths.tipoAquisicion, require("../routes/inventory/tipo_adquision"));
+    this.app.use(this.paths.tipomovimientos, require("../routes/inventory/tipos_movimiento"));
+/* support */
+   /*  this.app.use(this.paths.CategoriaTecnico, require("../routes/categoriaTecnico"));
+    this.app.use(this.paths.clientes, require("../routes/cliente"));
 
-    this.app.use(
-      this.paths.SolicitudSoporte,
-      require("../routes/solicitudSoporte"),
-    );
+    this.app.use(this.paths.SolicitudSoporte, require("../routes/solicitudSoporte"));
     this.app.use(this.paths.tecnicos, require("../routes/tecnicos"));
     this.app.use(this.paths.TipoSoporte, require("../routes/tipoSoporte"));
-    this.app.use(this.paths.TipoTicket, require("../routes/tiposTicket"));
+    this.app.use(this.paths.TipoTicket, require("../routes/tiposTicket"));  */
   }
 
   listen() {

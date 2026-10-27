@@ -5,10 +5,21 @@ Marca.init(
   {
     nombre: {
       type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notNull: {
+          msg: "El nombre de la marca es obligatorio",
+        },
+        notEmpty: {
+          msg: "El nombre de la marca no puede estar vacío",
+        },
+      },
+      /* type: DataTypes.STRING,
       required: [true, "El nombre de la marca es obligatorio"],
       allowNull: false,
 
-      unique: true,
+      unique: true, */
     },
 
     estado: {

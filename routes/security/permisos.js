@@ -9,6 +9,7 @@ const { validarJWT } = require("../../middleware/validar-jwt");
 const { esAdminRole } = require("../../middleware/validar-roles");
 const { check } = require("express-validator");
 const { rolValido } = require("../../helpers/db-validators");
+const { validarCampos } = require("../../middleware/validar-campos");
 const router = Router();
 
 router.get("/", [validarJWT, esAdminRole], getPermisos);
@@ -20,8 +21,8 @@ router.post(
     esAdminRole,
     check("nombre", "El nombre es obligatorio").not().isEmpty(),
     check("codigo", "El codigo es obligatorio").not().isEmpty(),
-
-    check("rolId").custom(rolValido),
+validarCampos
+ //   check("rolId").custom(rolValido),
   ],
   createPermisos,
 );
@@ -33,8 +34,8 @@ router.put(
     esAdminRole,
     check("nombre", "El nombre es obligatorio").not().isEmpty(),
     check("codigo", "El codigo es obligatorio").not().isEmpty(),
-
-    check("rolId").custom(rolValido),
+validarCampos
+    //check("rolId").custom(rolValido),
   ],
   updatePermisos,
 );

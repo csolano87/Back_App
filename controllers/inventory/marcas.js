@@ -1,6 +1,4 @@
 const Marca = require("../../models/inventory/marcas");
-const Marca = require("../../models/inventory/marcas");
-
 
 const getMarcas = async (req, res) => {
   const marcas = await Marca.findAll();
@@ -20,14 +18,14 @@ const getIdMarcas = async (req, res) => {
 
 const createMarca = async (req, res) => {
   const { nombre } = req.body;
-
+  console.log("---- marca",nombre);
   const marcas = new Marca({ nombre });
-  const marca = await Area_Equipo.findOne({
+  const marca = await Marca.findOne({
     where: {
       nombre: marcas.nombre,
     },
   });
-
+  console.log("controller marca",marca);
   if (marca) {
     return res.status(400).json({
       msg: "La marca  del equipo ya existe",
@@ -57,7 +55,7 @@ const updateMarca = async (req, res) => {
   res.status(200).json({ ok: true, msg: `Se actualizo con exito  la marca de equipo ` });
 };
 
-const deleteMarca= async (req, res) => {
+const deleteMarca = async (req, res) => {
   const id = req.params.id;
   const marca = await Marca.findByPk(id);
   if (!marca) {
@@ -76,5 +74,5 @@ module.exports = {
   getIdMarcas,
   createMarca,
   updateMarca,
-  deleteMarca
+  deleteMarca,
 };

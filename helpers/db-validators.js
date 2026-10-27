@@ -1,13 +1,13 @@
 //const Cabecera = require("../models/cabecera");
-const Role = require("../models/security/role");
+const Rol = require("../middleware/validar-roles");
 
-const rolValido = async (rol = "") => {
-  //console.log(rol);
+const rolValido = async (rolId = "") => {
+  console.log("validar rol",rolId);
   /* cambio de rol x id */
-  const existeRol = await Role.findOne({ where: { id: rol } });
+  const existeRol = await Rol.findOne({ where: { id: rolId } });
   //console.log(existeRol);
   if (!existeRol) {
-    throw new Error(`El rol ${rol} no esta registrado en la BD`);
+    throw new Error(`El rol ${rolId} no esta registrado en la BD`);
   }
 };
 
